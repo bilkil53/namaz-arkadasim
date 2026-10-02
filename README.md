@@ -1,4 +1,4 @@
-# 🕌 Namaz Arkadaşım (v2.0)
+# 🕌 Namaz Arkadaşım (v1.0)
 
 <p align="center">
   <b>Türkiye'nin En Kapsamlı ve Maneviyat Dolu Namaz, Kaza Takip ve İbadet Kardeşliği Uygulaması</b>
@@ -6,9 +6,9 @@
 
 <p align="center">
   <a href="https://github.com/bilkil53/namaz-arkadasim/releases/latest/download/Namaz_Arkadasim.apk">
-    <img src="https://img.shields.io/badge/İndir-Namaz%20Arkadaşım%20APK%20(v2.0)-00897B?style=for-the-badge&logo=android&logoColor=white" alt="APK İndir" />
+    <img src="https://img.shields.io/badge/İndir-Namaz%20Arkadaşım%20APK%20(v1.0)-00897B?style=for-the-badge&logo=android&logoColor=white" alt="APK İndir" />
   </a>
-  <img src="https://img.shields.io/badge/Sürüm-v2.0-0D47A1?style=for-the-badge" alt="Sürüm" />
+  <img src="https://img.shields.io/badge/Sürüm-v1.0-0D47A1?style=for-the-badge" alt="Sürüm" />
   <img src="https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android" />
   <img src="https://img.shields.io/badge/Durum-Resmi%20Dağıtım-brightgreen?style=for-the-badge" alt="Durum" />
 </p>
@@ -18,7 +18,7 @@
 ## 📥 Hemen İndir ve Kur
 Uygulamayı doğrudan Android cihazınıza indirmek için aşağıdaki bağlantıyı kullanabilirsiniz:
 
-👉 **[📥 Namaz Arkadaşım v2.0 APK İndir (Doğrudan İndirme)](https://github.com/bilkil53/namaz-arkadasim/releases/latest/download/Namaz_Arkadasim.apk)**  
+👉 **[📥 Namaz Arkadaşım v1.0 APK İndir (Doğrudan İndirme)](https://github.com/bilkil53/namaz-arkadasim/releases/latest/download/Namaz_Arkadasim.apk)**  
 *Kısa Bağlantı:* [https://tinyurl.com/24e2t7g3](https://tinyurl.com/24e2t7g3)
 
 ---
