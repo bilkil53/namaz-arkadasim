@@ -1,7 +1,7 @@
 # 🕌 Namaz Arkadaşım (v1.0)
 
 <p align="center">
-  <b>Türkiye'nin En Kapsamlı ve Maneviyat Dolu Namaz, Kaza Takip ve İbadet Kardeşliği Uygulaması</b>
+  <b>Türkiye'nin En Kapsamlı ve Maneviyat Dolu Namaz, Kaza Takip, Karne ve İbadet Kardeşliği Uygulaması</b>
 </p>
 
 <p align="center">
@@ -10,16 +10,18 @@
   </a>
   <img src="https://img.shields.io/badge/Sürüm-v1.0-0D47A1?style=for-the-badge" alt="Sürüm" />
   <img src="https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android" />
-  <img src="https://img.shields.io/badge/Durum-Resmi%20Dağıtım-brightgreen?style=for-the-badge" alt="Durum" />
+  <img src="https://img.shields.io/badge/Güvenlik-Sıfır%20Açık%20%7C%20Yerel%20Depolama-brightgreen?style=for-the-badge" alt="Güvenlik" />
 </p>
 
 ---
 
 ## 📥 Hemen İndir ve Kur
-Uygulamayı doğrudan Android cihazınıza indirmek için aşağıdaki bağlantıyı kullanabilirsiniz:
 
-👉 **[📥 Namaz Arkadaşım v1.0 APK İndir (Doğrudan İndirme)](https://github.com/bilkil53/namaz-arkadasim/releases/latest/download/Namaz_Arkadasim.apk)**  
-*Kısa Bağlantı:* [https://tinyurl.com/24e2t7g3](https://tinyurl.com/24e2t7g3)
+Uygulamayı doğrudan Android cihazınıza indirmek için aşağıdaki resmi GitHub indirme bağlantısını kullanabilirsiniz:
+
+👉 **[📥 Namaz Arkadaşım v1.0 APK İndir (Resmi ve Doğrudan İndirme)](https://github.com/bilkil53/namaz-arkadasim/releases/latest/download/Namaz_Arkadasim.apk)**
+
+> 🛡️ **Güvenlik Notu:** Bu bağlantı Microsoft GitHub sunucuları üzerinden doğrudan ve şifreli (SSL) olarak indirilir. Üçüncü taraf link kısaltıcılar kullanılmamaktadır.
 
 ---
 
@@ -29,53 +31,58 @@ Uygulamayı doğrudan Android cihazınıza indirmek için aşağıdaki bağlant�
 - Bulunduğunuz konumu (GPS veya 81 İl listesi) algılayarak T.C. Diyanet İşleri Başkanlığı hesaplama metoduna uygun kesin vakitleri anlık hesaplar.
 - Sabah, Öğle, İkindi, Akşam, Yatsı ve İmsak vakitleri için geri sayım sayacı.
 - Bir sonraki vakte ne kadar süre kaldığını gösteren dinamik durum kartı.
-- Vakitleri ve GPS lokasyonunu 'Bugün' sekmesindeki hızlı ikonlarla tek dokunuşla yenileme kolaylığı.
+- Sadeleştirilmiş **Bugün** sekmesiyle tamamen günün ibadetlerine odaklanma imkânı.
 
 ### 2. 📋 5 Vakit Namaz Takibi
 - Her vakit için tek dokunuşla durum kaydı: **Kıldım (Yeşil)**, **Kazaya Bıraktım (Sarı)** veya **Kılmadım (Kırmızı)**.
-- Günlük ve haftalık kılınma oranı ve motivasyon kartları.
-- Kolay ve sade takvimsel geçmiş.
+- Günü 5'te 5 tamamlama motivasyonu ve yüzdelik ilerleme çubuğu.
 
-### 3. 📿 Kapsamlı Kaza Namazı Yönetimi & Akıllı Sayaç
-- Sabah, Öğle, İkindi, Akşam, Yatsı ve Vitir kaza borçlarınızı ayrı ayrı veya toplu gün sayısı olarak girin.
-- Hızlı sayaç butonları (`+1`, `+5`, `-1`) ile kıldığınız kazaları kolayca düşün.
-- **Tahmini Bitiş Tarihi:** Günlük kaza kılma hedefinize göre borçlarınızın tam olarak hangi tarihte biteceğini otomatik hesaplayan akıllı algoritma.
+### 3. 🤝 Namaz Arkadaşı / Eş ile İbadet Kardeşliği
+- Tek dokunuşla 4 haneli özel davet kodu oluşturma.
+- WhatsApp, Telegram veya SMS ile resmi indirme linki ve davet kodunu tek tıkla paylaşma.
+- **Canlı Eşleşme:** Eşinizin veya arkadaşınızın gün içindeki namaz durumunu canlı görme.
+- **Kaza Durumu Paylaşımı:** Eşinizin kıldığı ve kalan kaza namazı borçlarını anlık takip edebilme.
+- Eşiniz namaz kıldığında veya kaza eda ettiğinde size ulaşan tebrik bildirimi.
+- Birbirinize tek dokunuşla manevi dua gönderme ("Rabbim namazını kabul etsin").
 
-### 4. 🤝 Namaz Arkadaşı (İbadet Kardeşliği)
-- Özel **Davet Kodu (ARK-XXXX)** ile arkadaşınızla veya ailenizle eşleşin.
-- Birbirinizin günlük namaz durumlarını canlı takip edin.
-- **"Hadi Namaza!"** motivasyon hatırlatması göndererek sevdiklerinizin ibadetine vesile olun.
+### 4. 📿 Gelişmiş Kaza Namazı Takip Sistemi
+- Sabah, Öğle, İkindi, Akşam, Yatsı ve Vitir için ayrı ayrı kaza sayacı.
+- Tek dokunuşla **Kıldım (-1)** butonuyla borç azaltma ve eda edilenleri artırma.
+- Toplu Kaza Hesaplama Sihirbazı (Kaç yıl/ay borcunuz olduğunu otomatik hesaplar).
+- **Eşimin Kaza Durumu Kartı:** Kaza ekranında eşinizin eda ettiği kaza sayılarını da görebilme.
 
-### 5. 🔔 Otomatik ve Akıllı Arka Plan Bildirimleri (Daima Aktif)
-*Kullanıcıyı ekran kalabalığıyla yormamak için bildirimler arka planda otomatik, sessiz ve düzenli olarak çalışır:*
-- **Vakit Yaklaştığında Manevi Hatırlatmalar:** Ezan vaktine az bir süre kala ayet ve hadislerle gelen özel ibadet hatırlatmaları.
-- **Namaz Arkadaşı Bildirimleri:** Eşleştiğiniz arkadaşınız namazını veya kazasını eda ettiğinde anlık sevinç ve motivasyon bildirimi.
-- **Günlük Manevi Bildirimler:** Sabah ve gün ortasında manevi şuur kazandıran hikmetli paylaşımlar.
-
-### 6. 📖 Günlük Manevi Köşe
-- Her gün yenilenen:
-  - **Günün Ayet-i Kerimesi** (Arapça okunuş ve Türkçe meali)
-  - **Günün Hadis-i Şerifi** (Sahih kaynaklarıyla birlikte)
-  - **Günün Hikmetli Sözü ve Duası**
-- Sevdiğiniz ayet ve hadisleri tek dokunuşla sevdiklerinizle paylaşma olanağı.
-
-### 7. 🔒 Çevrimdışı (Offline) Çalışma & Gizlilik
-- Tüm namaz kayıtlarınız, kaza borçlarınız ve kişisel bilgileriniz yalnızca cihazınızın kendi güvenli veritabanında saklanır.
-- İnternet bağlantınız olmasa bile namaz vakitleri ve sayaçlar kesintisiz çalışır.
+### 5. 🏆 Haftalık Namaz Karnesi & Manevi Motivasyon Rozetleri
+- **Haftalık Namaz Başarısı:** Son 7 günün 35 vaktinden kaçının eda edildiğini gösteren yüzde başarı karnesi.
+- **Gün Gün Vakit Dağılım Grafiği:** Pazartesi'den Pazar'a kadar her günün vakit tamamlama sütun grafiği.
+- **Eş ile Ortak Secde:** Eşinizle bu hafta ortak kılınan namazların uyum raporu.
+- **Manevi Başarı Rozetleri:**
+  - 🌅 *Sabah Namazı Muhafızı* (Sabah namazlarını vaktinde kılanlara)
+  - 🕋 *5'te 5 Sadakati* (Günü tam 5 vakitle bitirenlere)
+  - ⚡ *Kaza Avcısı* (Kaza borcunu gayretle eritenlere)
+  - 🤝 *İbadet Kardeşliği* (Eşiyle namaz takibi yapanlara)
+  - 🌟 *İstikrar Yıldızı* (Haftalık %80 üzeri başarı sağlayanlara)
+- **Günün Hadis-i Şerifi:** Her gün manevi motivasyon sağlayan sahih hadisler.
 
 ---
 
-## 📲 Android Cihaza Kurulum (3 Basit Adım)
+## 🔒 Güvenlik ve Gizlilik
 
-1. **İndirin:** Yukarıdaki butona veya [bu bağlantıya](https://github.com/bilkil53/namaz-arkadasim/releases/latest/download/Namaz_Arkadasim.apk) tıklayarak `Namaz_Arkadasim.apk` dosyasını telefonunuza indirin.
-2. **Açın:** İndirme tamamlandığında indirilen dosyaya dokunun.
-3. **Yükleyin:** Telefonunuz *"Bilinmeyen kaynaklardan yükleme"* izni istediğinde **"İzin Ver / Yükle"** seçeneğini işaretleyerek kurulumu tamamlayın.
+1. **Sıfır Güvenlik Açığı:** Uygulamada reklam, kullanıcı takipçisi veya üçüncü taraf analiz araçları **kesinlikle bulunmaz**.
+2. **Korumalı Yerel Depolama (Room SQLite):** Verileriniz hiçbir harici şirketin sunucusuna gitmez; telefonunuzun dahili güvenli belleğinde saklanır.
+3. **Otomatik Google Yedeklemesi:** Android'in güvenli bulut yedekleme sistemi sayesinde telefon değiştirseniz bile kaza namazlarınız kaybolmaz.
+4. **Kaynak Kod Koruması:** GitHub deposunda kaynak kod bulunmaz; yalnızca derlenmiş resmi APK paketi dağıtılmaktadır.
 
 ---
 
-## 🛡️ Telif Hakkı ve Güvenlik Bilgisi
-*Bu uygulama kullanıcı mahremiyetine ve ibadet gizliliğine tam saygılıdır. Kaynak kodları ve fikri mülkiyet hakları saklıdır; üçüncü taraf çoğaltmalara ve izinsiz kod kopyalamaya kapalıdır.*
+## 📱 Kurulum Rehberi
 
-**Geliştirici:** bilkil53  
-**İletişim:** e.bilkil5391@gmail.com  
-**Versiyon:** 2.0 (Resmi Android APK)
+1. Yukarıdaki **[İndir](https://github.com/bilkil53/namaz-arkadasim/releases/latest/download/Namaz_Arkadasim.apk)** butonuna dokunarak `Namaz_Arkadasim.apk` dosyasını indirin.
+2. İndirme tamamlandığında bildirim panelinden veya *İndirilenler* klasöründen dosyaya dokunun.
+3. Eğer telefonunuz uyarırsa *"Bilinmeyen kaynaklardan yüklemeye izin ver"* seçeneğini onaylayın.
+4. Yükleme tamamlandıktan sonra uygulamayı açıp konum iznini vererek ezan vakitlerini hemen görüntüleyebilirsiniz.
+
+---
+
+<p align="center">
+  <b>Dualarınızda yer almak dileğiyle. Allah kabul etsin. 🤲</b>
+</p>
