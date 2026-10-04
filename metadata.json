@@ -1,0 +1,6 @@
+{
+  "name": "Namaz Arkadaşım",
+  "description": "Beş vakit namaz ve kaza takibi, partner eşleşmesi, namaz vakitleri, günün ayeti ve motivasyon duaları içeren manevi namaz arkadaşı uygulaması.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

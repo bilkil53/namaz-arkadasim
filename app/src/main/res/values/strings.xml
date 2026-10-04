@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Namaz Arkadaşım</string>
+    <string name="title_tracker">Namaz Takibi</string>
+    <string name="title_kaza">Kaza Takibi</string>
+    <string name="title_partner">Namaz Arkadaşı</string>
+    <string name="title_times">Vakitler &amp; Kıble</string>
+    <string name="title_daily">Günün Sözü</string>
+    <string name="title_settings">Ayarlar</string>
+</resources>
