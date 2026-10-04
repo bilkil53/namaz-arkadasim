@@ -16,7 +16,7 @@ android {
     applicationId = "com.app.namazarkadasim"
     minSdk = 24
     targetSdk = 36
-    versionCode = 1
+    versionCode = 5
     versionName = "v.1"
     buildConfigField("long", "BUILD_TIMESTAMP", "${System.currentTimeMillis()}L")
 

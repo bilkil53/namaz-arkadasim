@@ -386,13 +386,17 @@ object PartnerSyncManager {
                                     "PARTNER_EVENT" -> {
                                         // New events from partner (not from me!)
                                         if (sender != cleanMyCode && timestamp > lastProcessedEventTime) {
+                                            val rawAction = msgJson.optString("actionText", "")
+                                            val cleanAction = rawAction
+                                                .replace("kazaya bıraktı", "kılmadı")
+                                                .replace("Kazaya bıraktı", "kılmadı")
                                             newEvents.add(
                                                 PartnerRemoteEvent(
                                                     senderCode = formatDisplayCode(sender),
                                                     senderName = msgJson.optString("senderName", ""),
                                                     eventType = msgJson.optString("eventType", ""),
                                                     prayerName = msgJson.optString("prayerName", ""),
-                                                    actionText = msgJson.optString("actionText", ""),
+                                                    actionText = cleanAction,
                                                     timestamp = timestamp
                                                 )
                                             )

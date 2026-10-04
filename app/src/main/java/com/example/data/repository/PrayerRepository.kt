@@ -281,14 +281,28 @@ class PrayerRepository(
 
         // Trigger notifications for new events from spouse!
         if (syncResult.newEvents.isNotEmpty()) {
-            for (event in syncResult.newEvents) {
-                if (event.timestamp > lastProcessedEventTime) {
-                    lastProcessedEventTime = event.timestamp
+            val validEvents = syncResult.newEvents.filter { it.timestamp > lastProcessedEventTime }
+            if (validEvents.isNotEmpty()) {
+                // Group by prayerName so only the latest status per prayer is notified (prevents both kıldı & kılmadı)
+                val latestPerPrayer = validEvents
+                    .groupBy { it.prayerName.ifBlank { it.eventType } }
+                    .mapValues { (_, list) -> list.maxByOrNull { it.timestamp } }
+                    .values
+                    .filterNotNull()
+                    .sortedBy { it.timestamp }
+
+                for (event in latestPerPrayer) {
+                    if (event.timestamp > lastProcessedEventTime) {
+                        lastProcessedEventTime = event.timestamp
+                    }
                     if (context != null) {
+                        val sanitized = event.actionText
+                            .replace("kazaya bıraktı", "kılmadı")
+                            .replace("Kazaya bıraktı", "kılmadı")
                         NotificationHelper.showPartnerAlertNotification(
                             context = context,
                             partnerName = current.partnerDisplayName.ifBlank { event.senderName.ifBlank { "Eşiniz" } },
-                            actionText = event.actionText
+                            actionText = sanitized
                         )
                     }
                 }
