@@ -759,11 +759,11 @@ private fun PartnerMiniStatusPineItem(name: String, status: String) {
                     modifier = Modifier.size(28.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Filled.Close, contentDescription = "Kaza", tint = Color.White, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Filled.Close, contentDescription = "Kılmadı", tint = Color.White, modifier = Modifier.size(16.dp))
                     }
                 }
                 Spacer(modifier = Modifier.height(3.dp))
-                Text(text = "Kaza", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFCA5A5))
+                Text(text = "Kılmadı", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFCA5A5))
             }
             "EXCUSED" -> {
                 Surface(

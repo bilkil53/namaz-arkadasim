@@ -8,16 +8,27 @@ import com.example.data.local.entity.KazaPrayerEntity
 import com.example.data.local.entity.PartnerInfoEntity
 import com.example.util.NotificationHelper
 import com.example.util.PartnerSyncManager
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 
 class PrayerRepository(
     private val prayerDao: PrayerDao,
     private val context: Context? = null
 ) {
+
+    private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val pendingPrayerEventJobs = ConcurrentHashMap<String, Job>()
 
     private var lastProcessedEventTime: Long = System.currentTimeMillis()
 
@@ -60,38 +71,65 @@ class PrayerRepository(
         // Broadcast to partner if matched
         broadcastCurrentStatusToPartner(todayDate = date, dailyPrayer = updated)
 
-        // Broadcast real-time event to spouse
-        val partner = prayerDao.getPartnerInfo().firstOrNull()
-        if (partner != null && partner.isMatched && partner.partnerInviteCode.isNotBlank()) {
-            val trName = when (prayerType.uppercase()) {
-                "FAJR", "SABAH" -> "Sabah"
-                "DHUHR", "OGLE", "ÖĞLE" -> "Öğle"
-                "ASR", "IKINDI", "İKİNDİ" -> "İkindi"
-                "MAGHRIB", "AKSAM", "AKŞAM" -> "Akşam"
-                "ISHA", "YATSI" -> "Yatsı"
-                else -> prayerType
-            }
+        // Cancel previous pending notification job for this prayer type
+        // This prevents double notifications if user taps through or changes their mind (e.g. kıldı then kılınmadı)
+        val prayerKey = prayerType.uppercase()
+        pendingPrayerEventJobs[prayerKey]?.cancel()
 
-            if (status == "PRAYED") {
-                PartnerSyncManager.broadcastPartnerEvent(
-                    codeA = partner.myInviteCode,
-                    codeB = partner.partnerInviteCode,
-                    myCode = partner.myInviteCode,
-                    myName = partner.myDisplayName.ifBlank { "Eşiniz" },
-                    eventType = "PRAYED",
-                    prayerName = trName,
-                    actionText = "$trName namazını kıldı. Allah kabul etsin! 🤲"
-                )
-            } else if (status == "MISSED") {
-                PartnerSyncManager.broadcastPartnerEvent(
-                    codeA = partner.myInviteCode,
-                    codeB = partner.partnerInviteCode,
-                    myCode = partner.myInviteCode,
-                    myName = partner.myDisplayName.ifBlank { "Eşiniz" },
-                    eventType = "MISSED",
-                    prayerName = trName,
-                    actionText = "$trName namazını kazaya bıraktı."
-                )
+        val trName = when (prayerKey) {
+            "FAJR", "SABAH" -> "Sabah"
+            "DHUHR", "OGLE", "ÖĞLE" -> "Öğle"
+            "ASR", "IKINDI", "İKİNDİ" -> "İkindi"
+            "MAGHRIB", "AKSAM", "AKŞAM" -> "Akşam"
+            "ISHA", "YATSI" -> "Yatsı"
+            else -> prayerType
+        }
+
+        // Send prayer notification to partner after a 5-second delay (debounce)
+        if (status == "PRAYED" || status == "MISSED") {
+            pendingPrayerEventJobs[prayerKey] = repositoryScope.launch {
+                try {
+                    delay(5000L) // Eşlere 5 saniye sonra gitsin
+
+                    // Verify latest status from database after 5 seconds to ensure user didn't change it again
+                    val latest = prayerDao.getPrayerForDate(date).firstOrNull() ?: return@launch
+                    val currentStatus = when (prayerKey) {
+                        "FAJR", "SABAH" -> latest.fajrStatus
+                        "DHUHR", "OGLE", "ÖĞLE" -> latest.dhuhrStatus
+                        "ASR", "IKINDI", "İKİNDİ" -> latest.asrStatus
+                        "MAGHRIB", "AKSAM", "AKŞAM" -> latest.maghribStatus
+                        "ISHA", "YATSI" -> latest.ishaStatus
+                        else -> status
+                    }
+
+                    val partner = prayerDao.getPartnerInfo().firstOrNull()
+                    if (partner != null && partner.isMatched && partner.partnerInviteCode.isNotBlank()) {
+                        val spouseName = partner.myDisplayName.ifBlank { "Eşiniz" }
+                        if (currentStatus == "PRAYED") {
+                            PartnerSyncManager.broadcastPartnerEvent(
+                                codeA = partner.myInviteCode,
+                                codeB = partner.partnerInviteCode,
+                                myCode = partner.myInviteCode,
+                                myName = spouseName,
+                                eventType = "PRAYED",
+                                prayerName = trName,
+                                actionText = "$trName namazını kıldı. Allah kabul etsin! 🤲"
+                            )
+                        } else if (currentStatus == "MISSED") {
+                            PartnerSyncManager.broadcastPartnerEvent(
+                                codeA = partner.myInviteCode,
+                                codeB = partner.partnerInviteCode,
+                                myCode = partner.myInviteCode,
+                                myName = spouseName,
+                                eventType = "MISSED",
+                                prayerName = trName,
+                                actionText = "$trName namazını kılmadı."
+                            )
+                        }
+                    }
+                } catch (_: CancellationException) {
+                    // Job was cancelled by a newer status change within 5 seconds, do nothing
+                }
             }
         }
     }
