@@ -96,7 +96,7 @@ object AppUpdateManager {
 
                 // Check version differences (SemVer: only prompt if GitHub tag is strictly higher than installed app)
                 val currentVersion = BuildConfig.VERSION_NAME
-                val currentVersionTag = "v$currentVersion"
+                val currentVersionTag = if (currentVersion.startsWith("v", ignoreCase = true)) currentVersion else "v$currentVersion"
 
                 val isNewerVersionTag = tagName.isNotBlank() && isTagHigher(tagName, currentVersionTag)
 

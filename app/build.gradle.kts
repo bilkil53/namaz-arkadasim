@@ -17,7 +17,7 @@ android {
     minSdk = 24
     targetSdk = 36
     versionCode = 1
-    versionName = "1.0.0"
+    versionName = "v.1"
     buildConfigField("long", "BUILD_TIMESTAMP", "${System.currentTimeMillis()}L")
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

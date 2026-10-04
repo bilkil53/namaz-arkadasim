@@ -175,7 +175,7 @@ fun SettingsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(text = "Sürüm", fontSize = 13.sp, color = TextSecondary)
-                        Text(text = "v1.0.0 (Resmi Sürüm)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = EmeraldPrimary)
+                        Text(text = "v.1 (Resmi Sürüm)", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = EmeraldPrimary)
                     }
 
                     HorizontalDivider(color = DividerColor, modifier = Modifier.padding(vertical = 8.dp))
