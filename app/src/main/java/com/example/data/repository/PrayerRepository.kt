@@ -225,9 +225,14 @@ class PrayerRepository(
         val lastSyncDay = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(current.lastSyncTime))
         val isSameDay = (lastSyncDay == today)
 
-        // If today is a new day and partner hasn't posted today's prayers yet, reset today's slots to NONE
+        // If today is a new day and partner hasn't posted today's prayers yet, shift yesterday's prayers
         if (!isSameDay && current.partnerFajr != "NONE") {
             current = current.copy(
+                partnerYesterdayFajr = current.partnerFajr,
+                partnerYesterdayDhuhr = current.partnerDhuhr,
+                partnerYesterdayAsr = current.partnerAsr,
+                partnerYesterdayMaghrib = current.partnerMaghrib,
+                partnerYesterdayIsha = current.partnerIsha,
                 partnerFajr = "NONE",
                 partnerDhuhr = "NONE",
                 partnerAsr = "NONE",
@@ -329,20 +334,27 @@ class PrayerRepository(
         }
 
         // Update partner prayer status in Room
-        if (syncResult.latestStatus != null) {
-            val update = syncResult.latestStatus
-            val isTodayUpdate = (update.date == today)
+        val todayUpdate = syncResult.latestStatus
+        val yesterdayUpdate = syncResult.yesterdayStatus
+
+        if (todayUpdate != null || yesterdayUpdate != null) {
+            val activeUpdate = todayUpdate ?: yesterdayUpdate!!
             val updated = current.copy(
-                lastSyncTime = if (update.timestamp > 0) update.timestamp else System.currentTimeMillis(),
-                partnerDisplayName = if (current.partnerDisplayName.isNotBlank()) current.partnerDisplayName else update.senderName.ifBlank { "Namaz Arkadaşım" },
-                partnerEmail = if (update.senderEmail.isNotBlank()) update.senderEmail else current.partnerEmail,
-                partnerFajr = if (isTodayUpdate) update.fajr else "NONE",
-                partnerDhuhr = if (isTodayUpdate) update.dhuhr else "NONE",
-                partnerAsr = if (isTodayUpdate) update.asr else "NONE",
-                partnerMaghrib = if (isTodayUpdate) update.maghrib else "NONE",
-                partnerIsha = if (isTodayUpdate) update.isha else "NONE",
-                partnerKazaCompleted = update.kazaCompleted,
-                partnerKazaOwed = update.kazaOwed
+                lastSyncTime = if (activeUpdate.timestamp > 0) activeUpdate.timestamp else System.currentTimeMillis(),
+                partnerDisplayName = if (current.partnerDisplayName.isNotBlank()) current.partnerDisplayName else activeUpdate.senderName.ifBlank { "Namaz Arkadaşım" },
+                partnerEmail = if (activeUpdate.senderEmail.isNotBlank()) activeUpdate.senderEmail else current.partnerEmail,
+                partnerFajr = todayUpdate?.fajr ?: current.partnerFajr,
+                partnerDhuhr = todayUpdate?.dhuhr ?: current.partnerDhuhr,
+                partnerAsr = todayUpdate?.asr ?: current.partnerAsr,
+                partnerMaghrib = todayUpdate?.maghrib ?: current.partnerMaghrib,
+                partnerIsha = todayUpdate?.isha ?: current.partnerIsha,
+                partnerYesterdayFajr = yesterdayUpdate?.fajr ?: current.partnerYesterdayFajr,
+                partnerYesterdayDhuhr = yesterdayUpdate?.dhuhr ?: current.partnerYesterdayDhuhr,
+                partnerYesterdayAsr = yesterdayUpdate?.asr ?: current.partnerYesterdayAsr,
+                partnerYesterdayMaghrib = yesterdayUpdate?.maghrib ?: current.partnerYesterdayMaghrib,
+                partnerYesterdayIsha = yesterdayUpdate?.isha ?: current.partnerYesterdayIsha,
+                partnerKazaCompleted = activeUpdate.kazaCompleted,
+                partnerKazaOwed = activeUpdate.kazaOwed
             )
             prayerDao.savePartnerInfo(updated)
             return updated

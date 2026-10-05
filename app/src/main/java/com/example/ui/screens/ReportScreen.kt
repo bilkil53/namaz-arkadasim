@@ -2,6 +2,7 @@ package com.example.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -59,13 +60,12 @@ fun ReportScreen(
                 recentPrayers.find { it.date == dateStr } ?: DailyPrayerEntity(date = dateStr)
             }
 
-            val statuses = listOf(
-                prayerEntity.fajrStatus,
-                prayerEntity.dhuhrStatus,
-                prayerEntity.asrStatus,
-                prayerEntity.maghribStatus,
-                prayerEntity.ishaStatus
-            )
+            val fajr = prayerEntity.fajrStatus
+            val dhuhr = prayerEntity.dhuhrStatus
+            val asr = prayerEntity.asrStatus
+            val maghrib = prayerEntity.maghribStatus
+            val isha = prayerEntity.ishaStatus
+            val statuses = listOf(fajr, dhuhr, asr, maghrib, isha)
             val completedCount = statuses.count { it == "PRAYED" }
 
             list.add(
@@ -74,12 +74,21 @@ fun ReportScreen(
                     dayName = dayName,
                     displayDate = displayDate,
                     completedPrayers = completedCount,
-                    isToday = i == 0
+                    isToday = i == 0,
+                    fajr = fajr,
+                    dhuhr = dhuhr,
+                    asr = asr,
+                    maghrib = maghrib,
+                    isha = isha
                 )
             )
             calendar.add(Calendar.DAY_OF_YEAR, -1)
         }
         list.reversed() // From 6 days ago to today
+    }
+
+    var selectedDayDate by remember(last7DaysData) {
+        mutableStateOf(last7DaysData.lastOrNull()?.date)
     }
 
     val totalWeekPrayed = remember(last7DaysData) {
@@ -92,6 +101,10 @@ fun ReportScreen(
 
     val totalCompletedKaza = remember(kazaPrayers) {
         kazaPrayers.sumOf { it.completedCount }
+    }
+
+    val activeDay = remember(selectedDayDate, last7DaysData) {
+        last7DaysData.find { it.date == selectedDayDate } ?: last7DaysData.lastOrNull()
     }
 
     LazyColumn(
@@ -240,7 +253,156 @@ fun ReportScreen(
                         verticalAlignment = Alignment.Bottom
                     ) {
                         last7DaysData.forEach { day ->
-                            DayBarColumn(day = day)
+                            DayBarColumn(
+                                day = day,
+                                isSelected = (day.date == selectedDayDate),
+                                onClick = { selectedDayDate = day.date }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // Selected Day Details Card (Detailed Breakdown by Prayer)
+        if (activeDay != null) {
+            item {
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = PureWhite),
+                    border = BorderStroke(1.dp, CardBorderColor),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = if (activeDay.isToday) "Bugünün Vakit Detayı" else "${activeDay.dayName} (${activeDay.displayDate}) Detayı",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    text = "Grafikte seçilen günün 5 vakit dökümü:",
+                                    fontSize = 11.sp,
+                                    color = TextSecondary
+                                )
+                            }
+                            Surface(
+                                color = if (activeDay.completedPrayers == 5) EmeraldContainer else if (activeDay.completedPrayers > 0) SoftInfoCardBg else MissedRedBg,
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text(
+                                    text = if (activeDay.completedPrayers == 5) "5/5 Tamamlandı 🌟" else "${activeDay.completedPrayers}/5 Vakit",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (activeDay.completedPrayers == 5) EmeraldPrimary else if (activeDay.completedPrayers > 0) TextPrimary else MissedRed,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // 5 prayer detail items
+                        val prayerList = listOf(
+                            Triple("Sabah", activeDay.fajr, "Güneş doğmadan önceki vaktin bereketi"),
+                            Triple("Öğle", activeDay.dhuhr, "Günün ortasındaki manevi mola"),
+                            Triple("İkindi", activeDay.asr, "Günün en kıymetli secde vakti"),
+                            Triple("Akşam", activeDay.maghrib, "Günün batışıyla ifa edilen şükür"),
+                            Triple("Yatsı", activeDay.isha, "Günün son huzur secdesi")
+                        )
+
+                        prayerList.forEachIndexed { index, (name, status, desc) ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 5.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = when (status) {
+                                            "PRAYED" -> PrayedGreenBg
+                                            "MISSED" -> MissedRedBg
+                                            "EXCUSED" -> ExcusedGrayBg
+                                            else -> Color(0xFFF1F5F3)
+                                        },
+                                        modifier = Modifier.size(30.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                imageVector = when (status) {
+                                                    "PRAYED" -> Icons.Filled.Check
+                                                    "MISSED" -> Icons.Filled.Close
+                                                    "EXCUSED" -> Icons.Filled.Remove
+                                                    else -> Icons.Filled.AccessTime
+                                                },
+                                                contentDescription = null,
+                                                tint = when (status) {
+                                                    "PRAYED" -> PrayedGreen
+                                                    "MISSED" -> MissedRed
+                                                    "EXCUSED" -> ExcusedGray
+                                                    else -> TextMuted
+                                                },
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            text = name,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = TextPrimary
+                                        )
+                                        Text(
+                                            text = desc,
+                                            fontSize = 10.sp,
+                                            color = TextSecondary
+                                        )
+                                    }
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(6.dp),
+                                    color = when (status) {
+                                        "PRAYED" -> PrayedGreenBg
+                                        "MISSED" -> MissedRedBg
+                                        "EXCUSED" -> ExcusedGrayBg
+                                        else -> Color(0xFFF1F5F3)
+                                    }
+                                ) {
+                                    Text(
+                                        text = when (status) {
+                                            "PRAYED" -> "Kılındı ✓"
+                                            "MISSED" -> "Kaza (Kılınmadı)"
+                                            "EXCUSED" -> "Muaf"
+                                            else -> "—"
+                                        },
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = when (status) {
+                                            "PRAYED" -> PrayedGreen
+                                            "MISSED" -> MissedRed
+                                            "EXCUSED" -> ExcusedGray
+                                            else -> TextMuted
+                                        },
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                    )
+                                }
+                            }
+                            if (index < 4) {
+                                HorizontalDivider(color = CardBorderColor.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 2.dp))
+                            }
                         }
                     }
                 }
@@ -500,7 +662,12 @@ data class DayReportData(
     val dayName: String,
     val displayDate: String,
     val completedPrayers: Int,
-    val isToday: Boolean
+    val isToday: Boolean,
+    val fajr: String = "NONE",
+    val dhuhr: String = "NONE",
+    val asr: String = "NONE",
+    val maghrib: String = "NONE",
+    val isha: String = "NONE"
 )
 
 @Composable
@@ -524,10 +691,18 @@ private fun ReportMetricItem(
 }
 
 @Composable
-private fun DayBarColumn(day: DayReportData) {
+private fun DayBarColumn(
+    day: DayReportData,
+    isSelected: Boolean = false,
+    onClick: () -> Unit = {}
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 4.dp)
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .background(if (isSelected) EmeraldContainer.copy(alpha = 0.5f) else Color.Transparent)
+            .padding(horizontal = 4.dp, vertical = 4.dp)
     ) {
         Text(
             text = "${day.completedPrayers}/5",
@@ -541,7 +716,7 @@ private fun DayBarColumn(day: DayReportData) {
         val barHeight = ((day.completedPrayers / 5f) * 65).coerceAtLeast(10f).dp
         Box(
             modifier = Modifier
-                .width(24.dp)
+                .width(22.dp)
                 .height(barHeight)
                 .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
                 .background(
@@ -555,8 +730,8 @@ private fun DayBarColumn(day: DayReportData) {
         Text(
             text = day.dayName,
             fontSize = 11.sp,
-            fontWeight = if (day.isToday) FontWeight.Bold else FontWeight.Medium,
-            color = if (day.isToday) EmeraldPrimary else TextPrimary
+            fontWeight = if (day.isToday || isSelected) FontWeight.Bold else FontWeight.Medium,
+            color = if (day.isToday) EmeraldPrimary else if (isSelected) TextPrimary else TextSecondary
         )
         Text(
             text = day.displayDate,

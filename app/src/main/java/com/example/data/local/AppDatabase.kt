@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
         PartnerInfoEntity::class,
         AppSettingsEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -31,6 +31,16 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
+        val MIGRATION_4_5 = object : androidx.room.migration.Migration(4, 5) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE partner_info ADD COLUMN partnerYesterdayFajr TEXT NOT NULL DEFAULT 'NONE'")
+                db.execSQL("ALTER TABLE partner_info ADD COLUMN partnerYesterdayDhuhr TEXT NOT NULL DEFAULT 'NONE'")
+                db.execSQL("ALTER TABLE partner_info ADD COLUMN partnerYesterdayAsr TEXT NOT NULL DEFAULT 'NONE'")
+                db.execSQL("ALTER TABLE partner_info ADD COLUMN partnerYesterdayMaghrib TEXT NOT NULL DEFAULT 'NONE'")
+                db.execSQL("ALTER TABLE partner_info ADD COLUMN partnerYesterdayIsha TEXT NOT NULL DEFAULT 'NONE'")
+            }
+        }
+
         fun getDatabase(context: Context, scope: CoroutineScope): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -38,6 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "namaz_arkadasim_database"
                 )
+                    .addMigrations(MIGRATION_4_5)
                     .fallbackToDestructiveMigration()
                     .addCallback(AppDatabaseCallback(scope))
                     .build()

@@ -10,6 +10,9 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.StringReader
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 data class PartnerPrayerUpdate(
@@ -44,6 +47,7 @@ data class IncomingMatchInfo(
 
 data class SyncResult(
     val latestStatus: PartnerPrayerUpdate?,
+    val yesterdayStatus: PartnerPrayerUpdate? = null,
     val newEvents: List<PartnerRemoteEvent>,
     val partnerUnmatched: Boolean
 )
@@ -341,12 +345,16 @@ object PartnerSyncManager {
                 .build()
 
             httpClient.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) return@withContext SyncResult(null, emptyList(), false)
-                val body = response.body?.string() ?: return@withContext SyncResult(null, emptyList(), false)
+                if (!response.isSuccessful) return@withContext SyncResult(null, null, emptyList(), false)
+                val body = response.body?.string() ?: return@withContext SyncResult(null, null, emptyList(), false)
 
                 var latestStatus: PartnerPrayerUpdate? = null
+                var yesterdayStatus: PartnerPrayerUpdate? = null
                 val newEvents = mutableListOf<PartnerRemoteEvent>()
                 var unmatchDetected = false
+
+                val yesterdayCal = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }
+                val yesterdayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(yesterdayCal.time)
 
                 BufferedReader(StringReader(body)).useLines { lines ->
                     for (line in lines) {
@@ -364,31 +372,40 @@ object PartnerSyncManager {
                                         // Take updates from partner
                                         if (sender == cleanPartner) {
                                             val date = msgJson.optString("date", "")
-                                            val isToday = (date == todayDate)
-                                            val currentIsToday = (latestStatus?.date == todayDate)
-
-                                            val shouldAccept = when {
-                                                latestStatus == null -> true
-                                                isToday && !currentIsToday -> true
-                                                !isToday && currentIsToday -> false
-                                                else -> timestamp >= latestStatus!!.timestamp
-                                            }
-
-                                            if (shouldAccept) {
-                                                latestStatus = PartnerPrayerUpdate(
-                                                    senderCode = formatDisplayCode(sender),
-                                                    senderName = msgJson.optString("senderName", ""),
-                                                    senderEmail = msgJson.optString("senderEmail", ""),
-                                                    date = date,
-                                                    fajr = msgJson.optString("fajr", "NONE"),
-                                                    dhuhr = msgJson.optString("dhuhr", "NONE"),
-                                                    asr = msgJson.optString("asr", "NONE"),
-                                                    maghrib = msgJson.optString("maghrib", "NONE"),
-                                                    isha = msgJson.optString("isha", "NONE"),
-                                                    kazaCompleted = msgJson.optInt("kazaCompleted", 0),
-                                                    kazaOwed = msgJson.optInt("kazaOwed", 0),
-                                                    timestamp = timestamp
-                                                )
+                                            if (date == todayDate) {
+                                                if (latestStatus == null || timestamp >= latestStatus!!.timestamp) {
+                                                    latestStatus = PartnerPrayerUpdate(
+                                                        senderCode = formatDisplayCode(sender),
+                                                        senderName = msgJson.optString("senderName", ""),
+                                                        senderEmail = msgJson.optString("senderEmail", ""),
+                                                        date = date,
+                                                        fajr = msgJson.optString("fajr", "NONE"),
+                                                        dhuhr = msgJson.optString("dhuhr", "NONE"),
+                                                        asr = msgJson.optString("asr", "NONE"),
+                                                        maghrib = msgJson.optString("maghrib", "NONE"),
+                                                        isha = msgJson.optString("isha", "NONE"),
+                                                        kazaCompleted = msgJson.optInt("kazaCompleted", 0),
+                                                        kazaOwed = msgJson.optInt("kazaOwed", 0),
+                                                        timestamp = timestamp
+                                                    )
+                                                }
+                                            } else if (date == yesterdayDate) {
+                                                if (yesterdayStatus == null || timestamp >= yesterdayStatus!!.timestamp) {
+                                                    yesterdayStatus = PartnerPrayerUpdate(
+                                                        senderCode = formatDisplayCode(sender),
+                                                        senderName = msgJson.optString("senderName", ""),
+                                                        senderEmail = msgJson.optString("senderEmail", ""),
+                                                        date = date,
+                                                        fajr = msgJson.optString("fajr", "NONE"),
+                                                        dhuhr = msgJson.optString("dhuhr", "NONE"),
+                                                        asr = msgJson.optString("asr", "NONE"),
+                                                        maghrib = msgJson.optString("maghrib", "NONE"),
+                                                        isha = msgJson.optString("isha", "NONE"),
+                                                        kazaCompleted = msgJson.optInt("kazaCompleted", 0),
+                                                        kazaOwed = msgJson.optInt("kazaOwed", 0),
+                                                        timestamp = timestamp
+                                                    )
+                                                }
                                             }
                                         }
                                     }
@@ -424,13 +441,14 @@ object PartnerSyncManager {
 
                 SyncResult(
                     latestStatus = latestStatus,
+                    yesterdayStatus = yesterdayStatus,
                     newEvents = newEvents,
                     partnerUnmatched = unmatchDetected
                 )
             }
         } catch (e: Exception) {
             Log.w(TAG, "Failed to sync with partner: ${e.message}")
-            SyncResult(null, emptyList(), false)
+            SyncResult(null, null, emptyList(), false)
         }
     }
 

@@ -48,6 +48,8 @@ fun TrackerScreen(
     val settings by viewModel.settings.collectAsState()
     val isUpdatingLocation by viewModel.isUpdatingLocation.collectAsState()
     val statusMessage by viewModel.statusMessage.collectAsState()
+    val isViewingToday by viewModel.isViewingToday.collectAsState()
+    val displayDateTitle by viewModel.displayDateTitle.collectAsState()
 
     val hasLocationPermission = remember(context, isUpdatingLocation) {
         androidx.core.content.ContextCompat.checkSelfPermission(
@@ -217,6 +219,121 @@ fun TrackerScreen(
                             contentDescription = "GPS ile Güncelle",
                             tint = EmeraldPrimary,
                             modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Dün / Bugün Date Navigation Switcher
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 2.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Segmented Dün / Bugün pill
+                Surface(
+                    color = EmeraldContainer.copy(alpha = 0.6f),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, SoftInfoCardBorder)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(3.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Surface(
+                            onClick = { viewModel.changeDateOffset(-1) },
+                            shape = RoundedCornerShape(9.dp),
+                            color = if (!isViewingToday) EmeraldPrimary else Color.Transparent
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Dün",
+                                    tint = if (!isViewingToday) Color.White else TextPrimary,
+                                    modifier = Modifier.size(13.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "Dün",
+                                    fontSize = 12.sp,
+                                    fontWeight = if (!isViewingToday) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (!isViewingToday) Color.White else TextPrimary
+                                )
+                            }
+                        }
+
+                        Surface(
+                            onClick = { viewModel.resetToToday() },
+                            shape = RoundedCornerShape(9.dp),
+                            color = if (isViewingToday) EmeraldPrimary else Color.Transparent
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Bugün",
+                                    fontSize = 12.sp,
+                                    fontWeight = if (isViewingToday) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isViewingToday) Color.White else TextPrimary
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (!isViewingToday) {
+                    Surface(
+                        onClick = { viewModel.resetToToday() },
+                        shape = RoundedCornerShape(10.dp),
+                        color = GoldContainer,
+                        border = BorderStroke(1.dp, GoldAccent.copy(alpha = 0.4f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Filled.Today, contentDescription = null, tint = OnGoldContainer, modifier = Modifier.size(14.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Bugüne Dön",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = OnGoldContainer
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // Info Banner if viewing Yesterday
+        if (!isViewingToday) {
+            item {
+                Card(
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = GoldContainer),
+                    border = BorderStroke(1.dp, GoldAccent.copy(alpha = 0.4f)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.History, contentDescription = null, tint = OnGoldContainer, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = "Dünkü namazlarınızı görüntülüyorsunuz. Unuttuğunuz veya kıldığınız vakitleri işaretleyebilirsiniz.",
+                            fontSize = 12.sp,
+                            color = OnGoldContainer,
+                            lineHeight = 16.sp
                         )
                     }
                 }

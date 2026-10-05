@@ -586,7 +586,7 @@ fun PartnerScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // True partner statuses
+                        // True partner statuses (Today)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -596,6 +596,73 @@ fun PartnerScreen(
                             PartnerMiniStatusPineItem("İkindi", partnerInfo.partnerAsr)
                             PartnerMiniStatusPineItem("Akşam", partnerInfo.partnerMaghrib)
                             PartnerMiniStatusPineItem("Yatsı", partnerInfo.partnerIsha)
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                        HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Partner Yesterday Prayer Status
+                        val yesterdayList = remember(partnerInfo) {
+                            listOf(
+                                partnerInfo.partnerYesterdayFajr,
+                                partnerInfo.partnerYesterdayDhuhr,
+                                partnerInfo.partnerYesterdayAsr,
+                                partnerInfo.partnerYesterdayMaghrib,
+                                partnerInfo.partnerYesterdayIsha
+                            )
+                        }
+                        val yesterdayPrayedCount = remember(yesterdayList) {
+                            yesterdayList.count { it == "PRAYED" }
+                        }
+                        val hasYesterdayData = remember(yesterdayList) {
+                            yesterdayList.any { it != "NONE" }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "📅 Dünkü Durumu:",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White.copy(alpha = 0.95f)
+                            )
+                            if (hasYesterdayData) {
+                                Surface(
+                                    color = if (yesterdayPrayedCount == 5) Color(0xFFFEF3C7) else Color.White.copy(alpha = 0.2f),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = if (yesterdayPrayedCount == 5) "5/5 Tamamlandı 🌟" else "$yesterdayPrayedCount/5 Kılındı",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (yesterdayPrayedCount == 5) Color(0xFF78350F) else Color.White,
+                                        modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = "Kayıt bekleniyor",
+                                    fontSize = 10.sp,
+                                    color = Color.White.copy(alpha = 0.7f)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            PartnerMiniStatusPineItem("Sabah", partnerInfo.partnerYesterdayFajr, isCompact = true)
+                            PartnerMiniStatusPineItem("Öğle", partnerInfo.partnerYesterdayDhuhr, isCompact = true)
+                            PartnerMiniStatusPineItem("İkindi", partnerInfo.partnerYesterdayAsr, isCompact = true)
+                            PartnerMiniStatusPineItem("Akşam", partnerInfo.partnerYesterdayMaghrib, isCompact = true)
+                            PartnerMiniStatusPineItem("Yatsı", partnerInfo.partnerYesterdayIsha, isCompact = true)
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -742,63 +809,68 @@ fun PartnerScreen(
 }
 
 @Composable
-private fun PartnerMiniStatusPineItem(name: String, status: String) {
+private fun PartnerMiniStatusPineItem(name: String, status: String, isCompact: Boolean = false) {
+    val circleSize = if (isCompact) 22.dp else 28.dp
+    val iconSize = if (isCompact) 13.dp else 16.dp
+    val nameSize = if (isCompact) 10.sp else 11.sp
+    val statusSize = if (isCompact) 9.sp else 10.sp
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = name, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Color.White.copy(alpha = 0.9f))
-        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = name, fontSize = nameSize, fontWeight = FontWeight.SemiBold, color = Color.White.copy(alpha = 0.9f))
+        Spacer(modifier = Modifier.height(if (isCompact) 2.dp else 4.dp))
         when (status) {
             "PRAYED" -> {
                 Surface(
                     shape = CircleShape,
                     color = Color.White,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(circleSize)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Filled.Check, contentDescription = "Kıldı", tint = EmeraldPrimary, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Filled.Check, contentDescription = "Kıldı", tint = EmeraldPrimary, modifier = Modifier.size(iconSize))
                     }
                 }
-                Spacer(modifier = Modifier.height(3.dp))
-                Text(text = "Kıldı", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF86EFAC))
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = "Kıldı", fontSize = statusSize, fontWeight = FontWeight.Bold, color = Color(0xFF86EFAC))
             }
             "MISSED" -> {
                 Surface(
                     shape = CircleShape,
                     color = Color(0xFFDC2626),
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(circleSize)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Filled.Close, contentDescription = "Kılmadı", tint = Color.White, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Filled.Close, contentDescription = "Kılmadı", tint = Color.White, modifier = Modifier.size(iconSize))
                     }
                 }
-                Spacer(modifier = Modifier.height(3.dp))
-                Text(text = "Kılmadı", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFFFCA5A5))
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = "Kılmadı", fontSize = statusSize, fontWeight = FontWeight.Bold, color = Color(0xFFFCA5A5))
             }
             "EXCUSED" -> {
                 Surface(
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.35f),
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(circleSize)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Filled.Remove, contentDescription = "Muaf", tint = Color.White, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Filled.Remove, contentDescription = "Muaf", tint = Color.White, modifier = Modifier.size(iconSize))
                     }
                 }
-                Spacer(modifier = Modifier.height(3.dp))
-                Text(text = "Muaf", fontSize = 10.sp, fontWeight = FontWeight.Medium, color = Color.White.copy(alpha = 0.8f))
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = "Muaf", fontSize = statusSize, fontWeight = FontWeight.Medium, color = Color.White.copy(alpha = 0.8f))
             }
             else -> {
                 Surface(
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.18f),
                     border = BorderStroke(1.dp, Color.White.copy(alpha = 0.4f)),
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(circleSize)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(text = "—", fontSize = 14.sp, color = Color.White.copy(alpha = 0.6f))
+                        Text(text = "—", fontSize = if (isCompact) 11.sp else 14.sp, color = Color.White.copy(alpha = 0.6f))
                     }
                 }
-                Spacer(modifier = Modifier.height(3.dp))
-                Text(text = "Bekliyor", fontSize = 10.sp, color = Color.White.copy(alpha = 0.7f))
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = "Bekliyor", fontSize = statusSize, color = Color.White.copy(alpha = 0.7f))
             }
         }
     }
