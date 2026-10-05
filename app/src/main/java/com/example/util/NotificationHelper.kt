@@ -40,7 +40,7 @@ object NotificationHelper {
                 "Namaz Arkadaşı Bildirimleri",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Eşiniz veya arkadaşınız namaz kıldığında gelen anlık bildirimler"
+                description = "Namaz arkadaşınız ibadetini eda ettiğinde gelen anlık bildirimler"
                 enableVibration(true)
             }
 
@@ -102,7 +102,7 @@ object NotificationHelper {
     }
 
     fun showPartnerAlertNotification(context: Context, partnerName: String, actionText: String) {
-        val title = if (partnerName.isNotBlank()) "🤝 Eşiniz: $partnerName" else "🤝 Namaz Arkadaşınız"
+        val title = if (partnerName.isNotBlank()) "🤝 Arkadaşınız: $partnerName" else "🤝 Namaz Arkadaşınız"
         val builder = NotificationCompat.Builder(context, CHANNEL_PARTNER_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle(title)

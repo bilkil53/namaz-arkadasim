@@ -202,7 +202,7 @@ fun ReportScreen(
                             value = "$totalCompletedKaza Vakit"
                         )
                         ReportMetricItem(
-                            label = "Eş Uyumu",
+                            label = "Arkadaş Uyumu",
                             value = if (partnerInfo.isMatched) "%85 Ortak" else "Tekil"
                         )
                     }
@@ -277,7 +277,7 @@ fun ReportScreen(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Eşiniz ile Birlikte Secde",
+                                text = "Arkadaşınız ile Birlikte Secde",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = TextPrimary
@@ -331,7 +331,7 @@ fun ReportScreen(
                 )
                 SpiritualBadgeRow(
                     title = "İbadet Kardeşliği",
-                    description = "Eşi veya namaz arkadaşıyla birlikte namaz takibi sürdürme.",
+                    description = "Namaz arkadaşıyla birlikte ibadet takibi sürdürme.",
                     icon = Icons.Filled.People,
                     isUnlocked = partnerInfo.isMatched,
                     badgeColor = Color(0xFF0284C7)

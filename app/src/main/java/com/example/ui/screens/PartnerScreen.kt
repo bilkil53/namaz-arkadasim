@@ -327,7 +327,7 @@ fun PartnerScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "💡 Bu kodu eşine / arkadaşına gönder. Karşı taraf kodu girdiğinde SENİN HİÇBİR KOD GİRMENE GEREK KALMADAN uygulaman otomatik olarak eşleşecektir!",
+                            text = "💡 Bu kodu namaz arkadaşına gönder. Karşı taraf kodu girdiğinde SENİN HİÇBİR KOD GİRMENE GEREK KALMADAN uygulaman otomatik olarak eşleşecektir!",
                             fontSize = 12.sp,
                             lineHeight = 17.sp,
                             color = Color.White.copy(alpha = 0.92f)
@@ -385,7 +385,7 @@ fun PartnerScreen(
                             color = TextPrimary
                         )
                         Text(
-                            text = "Arkadaşının veya eşinin sana gönderdiği 4 haneli davet kodunu buraya yapıştırıp eşleş:",
+                            text = "Namaz arkadaşının sana gönderdiği 4 haneli davet kodunu buraya yapıştırıp eşleş:",
                             fontSize = 12.sp,
                             color = TextSecondary
                         )
@@ -405,7 +405,7 @@ fun PartnerScreen(
                         OutlinedTextField(
                             value = customNicknameInput,
                             onValueChange = { customNicknameInput = it },
-                            label = { Text("Ona vermek istediğin isim (Örn: Eşim, Canım)", fontSize = 12.sp) },
+                            label = { Text("Ona vermek istediğin isim (Örn: Arkadaşım, Kardeşim, Eşim)", fontSize = 12.sp) },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(10.dp)
@@ -458,7 +458,7 @@ fun PartnerScreen(
                         Icon(Icons.Filled.Shield, contentDescription = null, tint = EmeraldPrimary, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
-                            text = "Konum bilgisi veya özel veriler asla paylaşılmaz. Uygulama sadece 2 kişi (eş/arkadaş) arasındadır. 3. bir kişi dahil olamaz.",
+                            text = "Konum bilgisi veya özel veriler asla paylaşılmaz. Uygulama sadece 2 namaz arkadaşı arasındadır. 3. bir kişi dahil olamaz.",
                             fontSize = 12.sp,
                             color = Color(0xFF2C4A42),
                             lineHeight = 17.sp
@@ -530,7 +530,7 @@ fun PartnerScreen(
                                         }
                                     } else {
                                         Text(
-                                            text = "Bağlı Eş / Arkadaş",
+                                            text = "Bağlı Namaz Arkadaşı",
                                             fontSize = 11.sp,
                                             color = Color.White.copy(alpha = 0.75f)
                                         )
@@ -564,7 +564,7 @@ fun PartnerScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Eşimin Bugünkü Namaz Durumu:",
+                                text = "Arkadaşımın Bugünkü Namaz Durumu:",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
@@ -671,15 +671,15 @@ fun PartnerScreen(
     if (showEditNameDialog) {
         AlertDialog(
             onDismissRequest = { showEditNameDialog = false },
-            title = { Text("Eşinin İsmini Düzenle", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+            title = { Text("Arkadaşının İsmini Düzenle", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
             text = {
                 Column {
-                    Text("Eşine veya namaz arkadaşına özel bir hitap verin:", fontSize = 12.sp, color = TextSecondary)
+                    Text("Namaz arkadaşına özel bir hitap veya isim verin:", fontSize = 12.sp, color = TextSecondary)
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
                         value = newPartnerNameInput,
                         onValueChange = { newPartnerNameInput = it },
-                        label = { Text("İsim / Takma Ad (Örn: Eşim, Canım, Babam)") },
+                        label = { Text("İsim / Hitap (Örn: Arkadaşım, Kardeşim, Eşim)") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp)

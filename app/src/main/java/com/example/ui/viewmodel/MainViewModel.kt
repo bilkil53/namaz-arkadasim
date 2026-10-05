@@ -272,7 +272,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     else -> prayerType
                 }
                 if (partnerInfo.value.isMatched) {
-                    _statusMessage.value = "$trName namazı kaydedildi ve eşinize bildirildi! 🤲"
+                    _statusMessage.value = "$trName namazı kaydedildi ve arkadaşınıza bildirildi! 🤲"
                 } else {
                     _statusMessage.value = "$trName namazı kılındı olarak kaydedildi! Allah kabul etsin."
                 }
@@ -306,7 +306,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 else -> type
             }
             if (partnerInfo.value.isMatched) {
-                _statusMessage.value = "1 adet $trName kazası kılındı ve eşinize bildirildi! 🤲"
+                _statusMessage.value = "1 adet $trName kazası kılındı ve arkadaşınıza bildirildi! 🤲"
             } else {
                 _statusMessage.value = "1 adet $trName kazası kılındı olarak kaydedildi!"
             }
@@ -390,7 +390,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun updatePartnerName(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.updatePartnerName(name)
-            _statusMessage.value = "Eşinizin ismi güncellendi: $name"
+            _statusMessage.value = "Arkadaşınızın ismi güncellendi: $name"
             delay(2500)
             _statusMessage.value = null
         }

@@ -110,7 +110,7 @@ fun KazaScreen(
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Eşimin Kaza Durumu (${partnerInfo.partnerDisplayName})",
+                                text = "Arkadaşımın Kaza Durumu (${partnerInfo.partnerDisplayName})",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = TextPrimary
