@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,20 +32,25 @@ fun KazaScreen(
     val kazaPrayers by viewModel.kazaPrayers.collectAsState()
     val partnerInfo by viewModel.partnerInfo.collectAsState()
     val statusMessage by viewModel.statusMessage.collectAsState()
+    val kazaUndoMessage by viewModel.kazaUndoMessage.collectAsState()
 
     var showBulkWizard by remember { mutableStateOf(false) }
 
     val totalOwed = remember(kazaPrayers) { kazaPrayers.sumOf { it.owedCount } }
     val totalCompleted = remember(kazaPrayers) { kazaPrayers.sumOf { it.completedCount } }
 
-    LazyColumn(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(WarmCreamBackground)
-            .padding(horizontal = 16.dp),
-        contentPadding = PaddingValues(top = 12.dp, bottom = 80.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            contentPadding = PaddingValues(top = 12.dp, bottom = 80.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
         // Status banner if present
         if (statusMessage != null) {
             item {
@@ -176,6 +182,72 @@ fun KazaScreen(
             }
         }
     }
+
+    // Floating Undo Bar for Kaza
+    AnimatedVisibility(
+        visible = kazaUndoMessage != null,
+        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .padding(horizontal = 16.dp, vertical = 20.dp)
+    ) {
+        Surface(
+            shape = RoundedCornerShape(14.dp),
+            color = Color(0xFF1E293B),
+            shadowElevation = 8.dp,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        Icons.Filled.CheckCircle,
+                        contentDescription = null,
+                        tint = Color(0xFF86EFAC),
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = kazaUndoMessage ?: "",
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                TextButton(
+                    onClick = { viewModel.undoLastKaza() },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFFFDE047))
+                ) {
+                    Text(
+                        text = "GERİ AL",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp
+                    )
+                }
+
+                IconButton(
+                    onClick = { viewModel.dismissKazaUndo() },
+                    modifier = Modifier.size(26.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = "Kapat",
+                        tint = Color.White.copy(alpha = 0.7f),
+                        modifier = Modifier.size(15.dp)
+                    )
+                }
+            }
+        }
+    }
+}
 
     if (showBulkWizard) {
         BulkAddKazaDialog(

@@ -16,6 +16,7 @@ import com.example.data.util.PrayerCalculator
 import com.example.util.GpsLocationHelper
 import com.example.util.NotificationHelper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -293,9 +294,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private val _kazaUndoMessage = MutableStateFlow<String?>(null)
+    val kazaUndoMessage: StateFlow<String?> = _kazaUndoMessage.asStateFlow()
+    private var lastCompletedKazaType: String? = null
+    private var kazaUndoJob: Job? = null
+
     fun completeOneKaza(type: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.completeOneKaza(type)
+            lastCompletedKazaType = type
             val trName = when (type.uppercase()) {
                 "FAJR" -> "Sabah"
                 "DHUHR" -> "Öğle"
@@ -305,14 +312,42 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 "WITR" -> "Vitir"
                 else -> type
             }
-            if (partnerInfo.value.isMatched) {
-                _statusMessage.value = "1 adet $trName kazası kılındı ve arkadaşınıza bildirildi! 🤲"
-            } else {
-                _statusMessage.value = "1 adet $trName kazası kılındı olarak kaydedildi!"
+            kazaUndoJob?.cancel()
+            _kazaUndoMessage.value = "1 adet $trName kazası kılındı."
+            kazaUndoJob = viewModelScope.launch {
+                delay(6000)
+                _kazaUndoMessage.value = null
+                lastCompletedKazaType = null
             }
+        }
+    }
+
+    fun undoLastKaza() {
+        val type = lastCompletedKazaType ?: return
+        lastCompletedKazaType = null
+        kazaUndoJob?.cancel()
+        _kazaUndoMessage.value = null
+        val trName = when (type.uppercase()) {
+            "FAJR" -> "Sabah"
+            "DHUHR" -> "Öğle"
+            "ASR" -> "İkindi"
+            "MAGHRIB" -> "Akşam"
+            "ISHA" -> "Yatsı"
+            "WITR" -> "Vitir"
+            else -> type
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.undoCompleteOneKaza(type)
+            _statusMessage.value = "$trName kazası geri alındı (+1 borç iade edildi)."
             delay(2500)
             _statusMessage.value = null
         }
+    }
+
+    fun dismissKazaUndo() {
+        kazaUndoJob?.cancel()
+        _kazaUndoMessage.value = null
+        lastCompletedKazaType = null
     }
 
     fun addBulkKaza(amount: Int) {

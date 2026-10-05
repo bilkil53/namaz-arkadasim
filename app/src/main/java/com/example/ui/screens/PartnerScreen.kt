@@ -558,6 +558,14 @@ fun PartnerScreen(
                         HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
                         Spacer(modifier = Modifier.height(10.dp))
 
+                        val syncDateStr = remember(partnerInfo.lastSyncTime) {
+                            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(partnerInfo.lastSyncTime))
+                        }
+                        val todayDateStr = remember {
+                            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                        }
+                        val isSyncToday = (syncDateStr == todayDateStr)
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -570,9 +578,9 @@ fun PartnerScreen(
                                 color = Color.White
                             )
                             Text(
-                                text = "Son: ${timeFormatter.format(Date(partnerInfo.lastSyncTime))}",
+                                text = if (isSyncToday) "Son: ${timeFormatter.format(Date(partnerInfo.lastSyncTime))}" else "Son: Dün",
                                 fontSize = 10.sp,
-                                color = Color.White.copy(alpha = 0.8f)
+                                color = Color.White.copy(alpha = 0.85f)
                             )
                         }
 

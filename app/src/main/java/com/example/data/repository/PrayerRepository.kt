@@ -171,6 +171,11 @@ class PrayerRepository(
         }
     }
 
+    suspend fun undoCompleteOneKaza(type: String) {
+        prayerDao.undoCompleteOneKaza(type.uppercase())
+        broadcastCurrentStatusToPartner()
+    }
+
     suspend fun addBulkKaza(amount: Int) {
         prayerDao.addBulkKaza(amount)
         broadcastCurrentStatusToPartner()
@@ -217,6 +222,20 @@ class PrayerRepository(
         }
 
         val today = getTodayDateString()
+        val lastSyncDay = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(current.lastSyncTime))
+        val isSameDay = (lastSyncDay == today)
+
+        // If today is a new day and partner hasn't posted today's prayers yet, reset today's slots to NONE
+        if (!isSameDay && current.partnerFajr != "NONE") {
+            current = current.copy(
+                partnerFajr = "NONE",
+                partnerDhuhr = "NONE",
+                partnerAsr = "NONE",
+                partnerMaghrib = "NONE",
+                partnerIsha = "NONE"
+            )
+            prayerDao.savePartnerInfo(current)
+        }
 
         // 1. If NOT matched yet: check if someone has claimed my invite code!
         if (!current.isMatched) {
@@ -312,15 +331,16 @@ class PrayerRepository(
         // Update partner prayer status in Room
         if (syncResult.latestStatus != null) {
             val update = syncResult.latestStatus
+            val isTodayUpdate = (update.date == today)
             val updated = current.copy(
-                lastSyncTime = System.currentTimeMillis(),
+                lastSyncTime = if (update.timestamp > 0) update.timestamp else System.currentTimeMillis(),
                 partnerDisplayName = if (current.partnerDisplayName.isNotBlank()) current.partnerDisplayName else update.senderName.ifBlank { "Namaz Arkadaşım" },
                 partnerEmail = if (update.senderEmail.isNotBlank()) update.senderEmail else current.partnerEmail,
-                partnerFajr = update.fajr,
-                partnerDhuhr = update.dhuhr,
-                partnerAsr = update.asr,
-                partnerMaghrib = update.maghrib,
-                partnerIsha = update.isha,
+                partnerFajr = if (isTodayUpdate) update.fajr else "NONE",
+                partnerDhuhr = if (isTodayUpdate) update.dhuhr else "NONE",
+                partnerAsr = if (isTodayUpdate) update.asr else "NONE",
+                partnerMaghrib = if (isTodayUpdate) update.maghrib else "NONE",
+                partnerIsha = if (isTodayUpdate) update.isha else "NONE",
                 partnerKazaCompleted = update.kazaCompleted,
                 partnerKazaOwed = update.kazaOwed
             )

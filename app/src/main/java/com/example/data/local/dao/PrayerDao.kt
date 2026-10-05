@@ -41,6 +41,9 @@ interface PrayerDao {
     @Query("UPDATE kaza_prayers SET owedCount = MAX(0, owedCount - 1), completedCount = completedCount + 1, updatedAt = :now WHERE prayerType = :type AND owedCount > 0")
     suspend fun completeOneKaza(type: String, now: Long = System.currentTimeMillis())
 
+    @Query("UPDATE kaza_prayers SET owedCount = owedCount + 1, completedCount = MAX(0, completedCount - 1), updatedAt = :now WHERE prayerType = :type")
+    suspend fun undoCompleteOneKaza(type: String, now: Long = System.currentTimeMillis())
+
     @Query("UPDATE kaza_prayers SET owedCount = MAX(0, owedCount + :extra) WHERE prayerType IN ('FAJR', 'DHUHR', 'ASR', 'MAGHRIB', 'ISHA', 'WITR')")
     suspend fun addBulkKaza(extra: Int)
 

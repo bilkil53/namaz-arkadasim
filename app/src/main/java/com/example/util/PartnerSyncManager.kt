@@ -364,8 +364,17 @@ object PartnerSyncManager {
                                         // Take updates from partner
                                         if (sender == cleanPartner) {
                                             val date = msgJson.optString("date", "")
-                                            // Prefer today's date or latest timestamp
-                                            if (latestStatus == null || timestamp >= latestStatus!!.timestamp || date == todayDate) {
+                                            val isToday = (date == todayDate)
+                                            val currentIsToday = (latestStatus?.date == todayDate)
+
+                                            val shouldAccept = when {
+                                                latestStatus == null -> true
+                                                isToday && !currentIsToday -> true
+                                                !isToday && currentIsToday -> false
+                                                else -> timestamp >= latestStatus!!.timestamp
+                                            }
+
+                                            if (shouldAccept) {
                                                 latestStatus = PartnerPrayerUpdate(
                                                     senderCode = formatDisplayCode(sender),
                                                     senderName = msgJson.optString("senderName", ""),
