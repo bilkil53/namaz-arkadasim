@@ -70,6 +70,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _statusMessage = MutableStateFlow<String?>(null)
     val statusMessage: StateFlow<String?> = _statusMessage.asStateFlow()
 
+    fun showStatusMessage(msg: String) {
+        viewModelScope.launch {
+            _statusMessage.value = msg
+            delay(2500)
+            _statusMessage.value = null
+        }
+    }
+
     // GPS location loading flag
     private val _isUpdatingLocation = MutableStateFlow(false)
     val isUpdatingLocation: StateFlow<Boolean> = _isUpdatingLocation.asStateFlow()
@@ -250,9 +258,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private var dateJob: Job? = null
+
     private fun loadPrayerForCurrentDate() {
         val dateStr = _selectedDateStr.value
-        viewModelScope.launch(Dispatchers.IO) {
+        dateJob?.cancel()
+        dateJob = viewModelScope.launch(Dispatchers.IO) {
             repository.getPrayerForDate(dateStr).collectLatest { prayer ->
                 _todayPrayer.value = prayer ?: DailyPrayerEntity(date = dateStr)
             }

@@ -16,11 +16,29 @@ interface PrayerDao {
     @Query("SELECT * FROM daily_prayers WHERE date = :date LIMIT 1")
     fun getPrayerForDate(date: String): Flow<DailyPrayerEntity?>
 
+    @Query("SELECT * FROM daily_prayers WHERE date = :date LIMIT 1")
+    suspend fun getPrayerForDateDirect(date: String): DailyPrayerEntity?
+
     @Query("SELECT * FROM daily_prayers ORDER BY date DESC LIMIT 30")
     fun getRecentDailyPrayers(): Flow<List<DailyPrayerEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateDailyPrayer(prayer: DailyPrayerEntity)
+
+    @Query("UPDATE daily_prayers SET fajrStatus = :status, updatedAt = :now WHERE date = :date")
+    suspend fun updateFajrStatus(date: String, status: String, now: Long = System.currentTimeMillis()): Int
+
+    @Query("UPDATE daily_prayers SET dhuhrStatus = :status, updatedAt = :now WHERE date = :date")
+    suspend fun updateDhuhrStatus(date: String, status: String, now: Long = System.currentTimeMillis()): Int
+
+    @Query("UPDATE daily_prayers SET asrStatus = :status, updatedAt = :now WHERE date = :date")
+    suspend fun updateAsrStatus(date: String, status: String, now: Long = System.currentTimeMillis()): Int
+
+    @Query("UPDATE daily_prayers SET maghribStatus = :status, updatedAt = :now WHERE date = :date")
+    suspend fun updateMaghribStatus(date: String, status: String, now: Long = System.currentTimeMillis()): Int
+
+    @Query("UPDATE daily_prayers SET ishaStatus = :status, updatedAt = :now WHERE date = :date")
+    suspend fun updateIshaStatus(date: String, status: String, now: Long = System.currentTimeMillis()): Int
 
     @Query("DELETE FROM daily_prayers")
     suspend fun clearAllDailyPrayers()

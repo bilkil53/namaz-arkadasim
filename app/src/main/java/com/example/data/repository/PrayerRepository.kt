@@ -57,16 +57,29 @@ class PrayerRepository(
     }
 
     suspend fun setPrayerStatus(date: String, prayerType: String, status: String) {
-        val existing = prayerDao.getPrayerForDate(date).firstOrNull() ?: DailyPrayerEntity(date = date)
-        val updated = when (prayerType.uppercase()) {
-            "FAJR", "SABAH" -> existing.copy(fajrStatus = status, updatedAt = System.currentTimeMillis())
-            "DHUHR", "OGLE", "ÖĞLE" -> existing.copy(dhuhrStatus = status, updatedAt = System.currentTimeMillis())
-            "ASR", "IKINDI", "İKİNDİ" -> existing.copy(asrStatus = status, updatedAt = System.currentTimeMillis())
-            "MAGHRIB", "AKSAM", "AKŞAM" -> existing.copy(maghribStatus = status, updatedAt = System.currentTimeMillis())
-            "ISHA", "YATSI", "YATSI" -> existing.copy(ishaStatus = status, updatedAt = System.currentTimeMillis())
-            else -> existing
+        val rowsAffected = when (prayerType.uppercase()) {
+            "FAJR", "SABAH" -> prayerDao.updateFajrStatus(date, status)
+            "DHUHR", "OGLE", "ÖĞLE" -> prayerDao.updateDhuhrStatus(date, status)
+            "ASR", "IKINDI", "İKİNDİ" -> prayerDao.updateAsrStatus(date, status)
+            "MAGHRIB", "AKSAM", "AKŞAM" -> prayerDao.updateMaghribStatus(date, status)
+            "ISHA", "YATSI" -> prayerDao.updateIshaStatus(date, status)
+            else -> 0
         }
-        prayerDao.insertOrUpdateDailyPrayer(updated)
+
+        val updated = if (rowsAffected == 0) {
+            val newEntity = when (prayerType.uppercase()) {
+                "FAJR", "SABAH" -> DailyPrayerEntity(date = date, fajrStatus = status)
+                "DHUHR", "OGLE", "ÖĞLE" -> DailyPrayerEntity(date = date, dhuhrStatus = status)
+                "ASR", "IKINDI", "İKİNDİ" -> DailyPrayerEntity(date = date, asrStatus = status)
+                "MAGHRIB", "AKSAM", "AKŞAM" -> DailyPrayerEntity(date = date, maghribStatus = status)
+                "ISHA", "YATSI" -> DailyPrayerEntity(date = date, ishaStatus = status)
+                else -> DailyPrayerEntity(date = date)
+            }
+            prayerDao.insertOrUpdateDailyPrayer(newEntity)
+            newEntity
+        } else {
+            prayerDao.getPrayerForDateDirect(date) ?: DailyPrayerEntity(date = date)
+        }
 
         // Broadcast to partner if matched
         broadcastCurrentStatusToPartner(todayDate = date, dailyPrayer = updated)

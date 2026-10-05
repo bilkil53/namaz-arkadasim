@@ -76,6 +76,22 @@ fun TrackerScreen(
         prayerStatuses.count { it == "PRAYED" }
     }
 
+    val isFajrArrived = remember(prayerTimes, isViewingToday) {
+        com.example.data.util.PrayerCalculator.isPrayerTimeArrived("FAJR", prayerTimes, isViewingToday)
+    }
+    val isDhuhrArrived = remember(prayerTimes, isViewingToday) {
+        com.example.data.util.PrayerCalculator.isPrayerTimeArrived("DHUHR", prayerTimes, isViewingToday)
+    }
+    val isAsrArrived = remember(prayerTimes, isViewingToday) {
+        com.example.data.util.PrayerCalculator.isPrayerTimeArrived("ASR", prayerTimes, isViewingToday)
+    }
+    val isMaghribArrived = remember(prayerTimes, isViewingToday) {
+        com.example.data.util.PrayerCalculator.isPrayerTimeArrived("MAGHRIB", prayerTimes, isViewingToday)
+    }
+    val isIshaArrived = remember(prayerTimes, isViewingToday) {
+        com.example.data.util.PrayerCalculator.isPrayerTimeArrived("ISHA", prayerTimes, isViewingToday)
+    }
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -364,6 +380,10 @@ fun TrackerScreen(
                 time = prayerTimes.imsak,
                 status = todayPrayer.fajrStatus,
                 icon = Icons.Outlined.WbTwilight,
+                isTimeArrived = isFajrArrived,
+                onLockedClick = {
+                    viewModel.showStatusMessage("Sabah namazı vakti henüz girmedi (Giriş: ${prayerTimes.imsak})")
+                },
                 onToggle = {
                     val next = getNextStatus(todayPrayer.fajrStatus)
                     viewModel.setPrayerStatus("FAJR", next)
@@ -377,6 +397,10 @@ fun TrackerScreen(
                 time = prayerTimes.ogle,
                 status = todayPrayer.dhuhrStatus,
                 icon = Icons.Outlined.WbSunny,
+                isTimeArrived = isDhuhrArrived,
+                onLockedClick = {
+                    viewModel.showStatusMessage("Öğle namazı vakti henüz girmedi (Giriş: ${prayerTimes.ogle})")
+                },
                 onToggle = {
                     val next = getNextStatus(todayPrayer.dhuhrStatus)
                     viewModel.setPrayerStatus("DHUHR", next)
@@ -390,6 +414,10 @@ fun TrackerScreen(
                 time = prayerTimes.ikindi,
                 status = todayPrayer.asrStatus,
                 icon = Icons.Outlined.Brightness5,
+                isTimeArrived = isAsrArrived,
+                onLockedClick = {
+                    viewModel.showStatusMessage("İkindi namazı vakti henüz girmedi (Giriş: ${prayerTimes.ikindi})")
+                },
                 onToggle = {
                     val next = getNextStatus(todayPrayer.asrStatus)
                     viewModel.setPrayerStatus("ASR", next)
@@ -403,6 +431,10 @@ fun TrackerScreen(
                 time = prayerTimes.aksam,
                 status = todayPrayer.maghribStatus,
                 icon = Icons.Outlined.NightsStay,
+                isTimeArrived = isMaghribArrived,
+                onLockedClick = {
+                    viewModel.showStatusMessage("Akşam namazı vakti henüz girmedi (Giriş: ${prayerTimes.aksam})")
+                },
                 onToggle = {
                     val next = getNextStatus(todayPrayer.maghribStatus)
                     viewModel.setPrayerStatus("MAGHRIB", next)
@@ -416,6 +448,10 @@ fun TrackerScreen(
                 time = prayerTimes.yatsi,
                 status = todayPrayer.ishaStatus,
                 icon = Icons.Outlined.Bedtime,
+                isTimeArrived = isIshaArrived,
+                onLockedClick = {
+                    viewModel.showStatusMessage("Yatsı namazı vakti henüz girmedi (Giriş: ${prayerTimes.yatsi})")
+                },
                 onToggle = {
                     val next = getNextStatus(todayPrayer.ishaStatus)
                     viewModel.setPrayerStatus("ISHA", next)
@@ -631,12 +667,22 @@ private fun PrayerListItemPineCard(
     time: String,
     status: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
+    isTimeArrived: Boolean = true,
+    onLockedClick: (() -> Unit)? = null,
     onToggle: () -> Unit
 ) {
     Card(
-        onClick = onToggle,
+        onClick = {
+            if (isTimeArrived) {
+                onToggle()
+            } else {
+                onLockedClick?.invoke()
+            }
+        },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = EmeraldPrimary),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isTimeArrived) EmeraldPrimary else EmeraldPrimary.copy(alpha = 0.82f)
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -651,7 +697,7 @@ private fun PrayerListItemPineCard(
                 // Translucent white box with white icon
                 Surface(
                     shape = RoundedCornerShape(10.dp),
-                    color = Color.White.copy(alpha = 0.16f),
+                    color = Color.White.copy(alpha = if (isTimeArrived) 0.16f else 0.10f),
                     modifier = Modifier.size(38.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
@@ -673,13 +719,17 @@ private fun PrayerListItemPineCard(
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
-                    val statusText = when (status) {
+                    val statusText = if (!isTimeArrived) {
+                        "Vakti henüz girmedi ($time)"
+                    } else when (status) {
                         "PRAYED" -> "✓ Kılındı"
                         "MISSED" -> "✕ Kılınmadı"
                         "EXCUSED" -> "— Muaf"
                         else -> "Dokunarak işaretle"
                     }
-                    val statusColor = when (status) {
+                    val statusColor = if (!isTimeArrived) {
+                        Color.White.copy(alpha = 0.65f)
+                    } else when (status) {
                         "PRAYED" -> Color(0xFF86EFAC) // Mint green
                         "MISSED" -> Color(0xFFFCA5A5) // Soft coral red
                         "EXCUSED" -> Color(0xFFE5E7EB)
@@ -705,7 +755,23 @@ private fun PrayerListItemPineCard(
                 Spacer(modifier = Modifier.width(12.dp))
 
                 // Circular Indicator
-                when (status) {
+                if (!isTimeArrived) {
+                    Surface(
+                        shape = CircleShape,
+                        color = Color.White.copy(alpha = 0.16f),
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.35f)),
+                        modifier = Modifier.size(26.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Filled.Lock,
+                                contentDescription = "Vakti Henüz Girmedi",
+                                tint = Color.White.copy(alpha = 0.8f),
+                                modifier = Modifier.size(13.dp)
+                            )
+                        }
+                    }
+                } else when (status) {
                     "PRAYED" -> {
                         Surface(
                             shape = CircleShape,

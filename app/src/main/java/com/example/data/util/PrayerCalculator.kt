@@ -182,4 +182,24 @@ object PrayerCalculator {
         val bearingDeg = Math.toDegrees(bearingRad)
         return (bearingDeg + 360.0) % 360.0
     }
+
+    /**
+     * Checks if a prayer time has arrived for the day.
+     * If isToday is false (e.g. yesterday), returns true because past days are completed.
+     */
+    fun isPrayerTimeArrived(prayerType: String, prayerTimes: DailyPrayerTimes, isToday: Boolean): Boolean {
+        if (!isToday) return true
+        val cal = Calendar.getInstance()
+        val currentSec = cal.get(Calendar.HOUR_OF_DAY) * 3600 + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND)
+        val prayerTimeStr = when (prayerType.uppercase()) {
+            "FAJR", "SABAH" -> prayerTimes.imsak
+            "DHUHR", "OGLE", "ÖĞLE" -> prayerTimes.ogle
+            "ASR", "IKINDI", "İKİNDİ" -> prayerTimes.ikindi
+            "MAGHRIB", "AKSAM", "AKŞAM" -> prayerTimes.aksam
+            "ISHA", "YATSI" -> prayerTimes.yatsi
+            else -> return true
+        }
+        val targetSec = timeStrToSeconds(prayerTimeStr)
+        return currentSec >= targetSec
+    }
 }
