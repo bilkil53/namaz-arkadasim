@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Aile ile Secdeye</string>
+    <string name="system_bar_title">Dijital Namaz Takip Sistemi</string>
+    <string name="home_title">Dijital Namaz Takip</string>
+    <string name="title_tracker">Namaz Takibi</string>
+    <string name="title_kaza">Kaza Takibi</string>
+    <string name="title_partner">Aile Halkası</string>
+    <string name="title_times">Vakitler &amp; Kıble</string>
+    <string name="title_daily">Günün Sözü</string>
+    <string name="title_settings">Ayarlar</string>
+</resources>

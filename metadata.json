@@ -1,0 +1,6 @@
+{
+  "name": "Aile ile Secdeye",
+  "description": "Aile ile Secdeye - Canlı Aile Durum Paneli, Ortak Havuz ve Manevi Takip Uygulaması",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
